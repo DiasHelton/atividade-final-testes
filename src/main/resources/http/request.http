@@ -12,5 +12,11 @@ Content-Type: application/json
 > {%
  client.test("Request executed", function() {
     // TODO: Implementa Testes
+    client.assert(response.body.resultadoAnalise.aprovado === true)
+    client.assert(response.body.resultadoAnalise.resultado[0] === "OK")
+    client.assert(response.body.resultadoRequisicao.aprovado === true)
+    client.assert(response.body.resultadoRequisicao.resultado[0] === "OK")
+    client.assert(response.body.resultadoTesouraria.aprovado === true)
+    client.assert(response.body.emprestimoFoiAprovado === true)
  });
  %}
