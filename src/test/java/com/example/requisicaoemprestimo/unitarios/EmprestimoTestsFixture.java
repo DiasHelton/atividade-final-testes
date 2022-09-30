@@ -34,4 +34,26 @@ public class EmprestimoTestsFixture {
         tesouraria.setValorAprovado(emprestimo.getValorSolicitado());
         return tesouraria;
     }
+
+    public static Emprestimo emprestimoAnaliseInvalida(double valor, int quantidadeParcelas){
+        var emprestimo = new Emprestimo(UUID.randomUUID(), valor, quantidadeParcelas);
+        
+        var analiseCredito = buildResultadoAnalise(false, new String[]{"NOT OK"});
+        var tesouraria = buildResultadoTesouraria(true, "OK", emprestimo);
+
+        emprestimo.setResultadoAnalise(analiseCredito);
+        emprestimo.setResultadoTesouraria(tesouraria);
+        return emprestimo;
+    }
+
+    public static Emprestimo emprestimoTesourariaInvalida(double valor, int quantidadeParcelas){
+        var emprestimo = new Emprestimo(UUID.randomUUID(), valor, quantidadeParcelas);
+        
+        var analiseCredito = buildResultadoAnalise(true, new String[]{"OK"});
+        var tesouraria = buildResultadoTesouraria(false, "NOT OK", emprestimo);
+
+        emprestimo.setResultadoAnalise(analiseCredito);
+        emprestimo.setResultadoTesouraria(tesouraria);
+        return emprestimo;
+    }
 }

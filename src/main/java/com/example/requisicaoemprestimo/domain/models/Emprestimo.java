@@ -100,4 +100,3 @@ public class Emprestimo {
         this.resultadoRequisicao = resultadoRequisicao;
     }
 }
-
