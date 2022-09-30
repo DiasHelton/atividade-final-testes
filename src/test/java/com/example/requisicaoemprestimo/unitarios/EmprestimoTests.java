@@ -1,53 +1,57 @@
 package com.example.requisicaoemprestimo.unitarios;
 
+import com.example.requisicaoemprestimo.domain.models.Emprestimo;
+import com.example.requisicaoemprestimo.domain.models.Parcela;
+import com.example.requisicaoemprestimo.domain.models.ResultadoAnalise;
+import com.example.requisicaoemprestimo.domain.models.ResultadoTesouraria;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.text.DecimalFormat;
-import java.util.UUID;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
-
 public class EmprestimoTests {
+    private final EmprestimoTestsFixture fixture = new EmprestimoTestsFixture();
+    private Emprestimo emprestimo;
+
+    @BeforeEach
+    public void Setup()
+    {
+        emprestimo = fixture.emprestimoAprovado( 100.00, 12);
+    }
+
     @Test
     public void testParcelas(){
-        // ARRANGE
-        //TODO: FAÇA USO DO FIXTURE
-        //TODO: Crie uma classe Emprestimo com valor 100 e quantidade de parcelas 12
+        Optional<Parcela[]> parcelas = emprestimo.getParcelas();
 
-        // ACT
-        //TODO: Recupere as parcelas do emprestimo
-
-        // ASSERTS
-        //TODO: Validar se existe parcelas
-        //TODO: Validar o valor total de empréstimo é 106.50
-        //TODO: Validar se o número de parcelas é 12
+        assertFalse(parcelas.isEmpty());
+        ResultadoTesouraria resultadoTesouraria = new ResultadoTesouraria();
+        emprestimo.setResultadoTesouraria(resultadoTesouraria);
+        Optional<Parcela[]> parcelasCalculadas =  emprestimo.getParcelas();
+        double sum = 0.0;
+        for(Parcela p : parcelasCalculadas.get()) {
+            sum += p.getValorDaParcela();
+        }
+        
+        assertEquals(106.50, Math.round(sum * 100.0) / 100.0);
+        assertEquals(12, emprestimo.getQuantidadeParcelasSolicitadas());
     }
 
     @Test
     public void testeAnaliseDeCreditoInvalida(){
-        // ARRANGE
-        //TODO: FAÇA USO DO FIXTURE
-        //TODO: Crie uma classe Emprestimo com valor 100 e quantidade de parcelas 12
+        ResultadoAnalise resultadoAnalise = new ResultadoAnalise();
+        emprestimo.setResultadoAnalise(resultadoAnalise);
 
-        // ACT
-        //TODO: Crie uma análise de crédito rejeitando a proposta
-        //TODO: Associe or resulado ao emprestimo
-
-        // ASSERTS
-        //TODO: Validar que o  emprestimo NÃO está aprovado
+        ResultadoAnalise result = emprestimo.getResultadoAnalise();
+        assertFalse(result.isAprovado());
     }
 
     @Test
     public void testeResultadoDaTesourariaInvalida(){
-        // ARRANGE
-        //TODO: FAÇA USO DO FIXTURE
-        //TODO: Crie uma classe Emprestimo com valor 100 e quantidade de parcelas 12
+        ResultadoTesouraria resultadoTesouraria = new ResultadoTesouraria();
+        emprestimo.setResultadoTesouraria(resultadoTesouraria);
 
-        // ACT
-        //TODO: Crie uma solicitação para tesouraria rejeitando a proposta
-        //TODO: Associe o resultado ao emprestimo
-
-        // ASSERTS
-        //TODO: Validar que o  emprestimo NÃO está aprovado
+        ResultadoTesouraria result = emprestimo.getResultadoTesouraria();
+        assertFalse(result.isAprovado());
     }
-
 }
