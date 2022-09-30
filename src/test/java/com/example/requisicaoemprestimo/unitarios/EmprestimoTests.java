@@ -1,57 +1,39 @@
 package com.example.requisicaoemprestimo.unitarios;
 
-import com.example.requisicaoemprestimo.domain.models.Emprestimo;
-import com.example.requisicaoemprestimo.domain.models.Parcela;
-import com.example.requisicaoemprestimo.domain.models.ResultadoAnalise;
-import com.example.requisicaoemprestimo.domain.models.ResultadoTesouraria;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.DecimalFormat;
-import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.*;
+import com.example.requisicaoemprestimo.domain.models.Emprestimo;
+
 public class EmprestimoTests {
-    private final EmprestimoTestsFixture fixture = new EmprestimoTestsFixture();
-    private Emprestimo emprestimo;
 
-    @BeforeEach
-    public void Setup()
-    {
-        emprestimo = fixture.emprestimoAprovado( 100.00, 12);
-    }
+    @Autowired
+    EmprestimoTestsFixture fixture;
 
     @Test
     public void testParcelas(){
-        Optional<Parcela[]> parcelas = emprestimo.getParcelas();
+        Emprestimo emprestimo = fixture.emprestimoAprovado(100, 12);
 
-        assertFalse(parcelas.isEmpty());
-        ResultadoTesouraria resultadoTesouraria = new ResultadoTesouraria();
-        emprestimo.setResultadoTesouraria(resultadoTesouraria);
-        Optional<Parcela[]> parcelasCalculadas =  emprestimo.getParcelas();
-        double sum = 0.0;
-        for(Parcela p : parcelasCalculadas.get()) {
-            sum += p.getValorDaParcela();
-        }
-        
-        assertEquals(106.50, Math.round(sum * 100.0) / 100.0);
+        assertTrue(emprestimo.getParcelas().isPresent());
+        assertEquals(106.50, emprestimo.getValorTotalEmprestimo());
         assertEquals(12, emprestimo.getQuantidadeParcelasSolicitadas());
     }
 
     @Test
     public void testeAnaliseDeCreditoInvalida(){
-        ResultadoAnalise resultadoAnalise = new ResultadoAnalise();
-        emprestimo.setResultadoAnalise(resultadoAnalise);
-
-        ResultadoAnalise result = emprestimo.getResultadoAnalise();
-        assertFalse(result.isAprovado());
+        Emprestimo emprestimo = fixture.emprestimoAnaliseInvalida(100, 12);
+        
+        assertEquals(false, emprestimo.isEmprestimoFoiAprovado());
     }
 
     @Test
     public void testeResultadoDaTesourariaInvalida(){
-        ResultadoTesouraria resultadoTesouraria = new ResultadoTesouraria();
-        emprestimo.setResultadoTesouraria(resultadoTesouraria);
+        Emprestimo emprestimo = fixture.emprestimoTesourariaInvalida(100, 12);
 
-        ResultadoTesouraria result = emprestimo.getResultadoTesouraria();
-        assertFalse(result.isAprovado());
+        assertEquals(false, emprestimo.isEmprestimoFoiAprovado());
     }
+
 }
